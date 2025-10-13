@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask
-from src.models.extensions import db  # Import the db object
-from src.routes import main_bp  # Import the blueprint
+from models.extensions import db  # Import the db object
+from routes import main_bp  # Import the blueprint
 from logging.config import dictConfig
 
 

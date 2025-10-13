@@ -1,7 +1,7 @@
 # routes.py
 from flask import Blueprint, jsonify, request
-from src.models.extensions import db
-from src.util.api import process_request, parse_word
+from models.extensions import db
+from util.api import process_request, parse_word
 import logging
 
 root = logging.getLogger("root")

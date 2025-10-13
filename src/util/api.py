@@ -2,8 +2,8 @@
 import requests # typing: ignore
 from flask import Blueprint
 from typing import List, Any
-from src.models.word import Word, Phonetic, Meaning, Definition
-from src.models.extensions import db
+from models.word import Word, Phonetic, Meaning, Definition
+from models.extensions import db
 import sys
 import logging
 

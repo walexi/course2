@@ -2,7 +2,7 @@
 from flask import Flask
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional, List
-from src.models.extensions import Base, db
+from models.extensions import Base, db
 from sqlalchemy.types import TypeDecorator, Text
 import json
 
