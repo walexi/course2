@@ -39,11 +39,21 @@ with app.app_context(): # Create tables within the app context
 @app.route("/")
 def main():
     return '''
-     <p>Enter word here to add to database</p>
-	<form action="/get_word" method="POST">
-         <input name="user_input">
-         <input type="submit" value="Submit!">
-    </form>
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Assignment</title>
+    </head>
+    <body style="background-color: #F0F8FF; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
+    <div style="text-align: center; color: white;">
+        <h1 style="color: #666;">Enter word here to add to database</h1>
+        <form action="/get_word" method="POST" style="display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
+        <input name="user_input" placeholder="Enter something..." style="padding: 8px; margin-bottom: 5px;">
+        <input type="submit" value="Submit" style="background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">
+        </form>
+    </div>
+    </body>
+    </html>
     '''
 
 @app.route("/get_word", methods=["POST"])
