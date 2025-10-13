@@ -33,7 +33,9 @@ dictConfig(
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"  # Example URI
 db.init_app(app) # Initialize db with the Flask app
-
+with app.app_context(): # Create tables within the app context
+    db.create_all() 
+ 
 @app.route("/")
 def main():
     return '''
@@ -56,7 +58,4 @@ def get_word():
         return str(e)
     
 if __name__ == "__main__":
-    with app.app_context(): # Create tables within the app context
-        db.create_all() 
- 
     app.run(debug=True)
