@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask
-from src.models.extensions import db  # Import the db object
-from src.routes import main_bp  # Import the blueprint
 from logging.config import dictConfig
-
-
-app = Flask(__name__)
 
 
 dictConfig(
@@ -33,13 +28,18 @@ dictConfig(
 )
 
 def create_app():
+    app = Flask(__name__)
+    from src.models.extensions import db  # Import the db object
+    from src.routes.routes import main_bp  # Import the blueprint
+
     app.register_blueprint(main_bp)  # Register the blueprint
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"  # Example URI
     db.init_app(app) # Initialize db with the Flask app
+    with app.app_context(): # Create tables within the app context
+        db.create_all() 
     return app
 
 if __name__ == "__main__":
     app = create_app()
-    with app.app_context(): # Create tables within the app context
-        db.create_all() 
+    
     app.run(debug=True)

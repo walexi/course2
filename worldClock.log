@@ -1,0 +1,7 @@
+[October 13, 2025 15:25:54 PDT] [INFO | _internal] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[October 13, 2025 15:25:54 PDT] [INFO | _internal] [33mPress CTRL+C to quit[0m
+[October 13, 2025 15:25:54 PDT] [INFO | _internal]  * Restarting with stat
+[October 13, 2025 15:25:55 PDT] [WARNING | _internal]  * Debugger is active!
+[October 13, 2025 15:25:55 PDT] [INFO | _internal]  * Debugger PIN: 315-820-742
+[October 13, 2025 15:26:09 PDT] [INFO | _internal] 127.0.0.1 - - [13/Oct/2025 15:26:09] "GET / HTTP/1.1" 200 -

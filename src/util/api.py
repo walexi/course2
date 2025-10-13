@@ -9,7 +9,6 @@ import logging
 
 root = logging.getLogger("root")
 
-main_bp = Blueprint('main', __name__)
 
 def process_request(word: str) -> None:
     response = fetch_word(word)
