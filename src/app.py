@@ -5,6 +5,8 @@ from src.routes import main_bp  # Import the blueprint
 from logging.config import dictConfig
 
 
+app = Flask(__name__)
+
 
 dictConfig(
     {
@@ -31,7 +33,6 @@ dictConfig(
 )
 
 def create_app():
-    app = Flask(__name__)
     app.register_blueprint(main_bp)  # Register the blueprint
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"  # Example URI
     db.init_app(app) # Initialize db with the Flask app
