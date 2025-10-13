@@ -9,16 +9,6 @@ root = logging.getLogger("root")
 
 main_bp = Blueprint('main', __name__)
 
-@main_bp.route("/")
-def main():
-    return '''
-     <p>Enter word here to add to database</p>
-	<form action="/get_word" method="POST">
-         <input name="user_input">
-         <input type="submit" value="Submit!">
-    </form>
-    '''
-
 @main_bp.route("/get_word", methods=["POST"])
 def get_word():
     input_word = request.form.get("user_input", "")

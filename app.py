@@ -29,6 +29,16 @@ dictConfig(
     }
 )
 
+@app.route("/")
+def main():
+    return '''
+     <p>Enter word here to add to database</p>
+	<form action="/get_word" method="POST">
+         <input name="user_input">
+         <input type="submit" value="Submit!">
+    </form>
+    '''
+
 def create_app():
     from src.models.extensions import db  # Import the db object
     from src.routes.routes import main_bp  # Import the blueprint

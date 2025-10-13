@@ -5,3 +5,23 @@
 [October 13, 2025 15:25:55 PDT] [WARNING | _internal]  * Debugger is active!
 [October 13, 2025 15:25:55 PDT] [INFO | _internal]  * Debugger PIN: 315-820-742
 [October 13, 2025 15:26:09 PDT] [INFO | _internal] 127.0.0.1 - - [13/Oct/2025 15:26:09] "GET / HTTP/1.1" 200 -
+[October 13, 2025 15:45:16 PDT] [INFO | _internal] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[October 13, 2025 15:45:16 PDT] [INFO | _internal] [33mPress CTRL+C to quit[0m
+[October 13, 2025 15:45:16 PDT] [INFO | _internal]  * Restarting with stat
+[October 13, 2025 15:45:17 PDT] [WARNING | _internal]  * Debugger is active!
+[October 13, 2025 15:45:17 PDT] [INFO | _internal]  * Debugger PIN: 315-820-742
+[October 13, 2025 15:45:32 PDT] [INFO | _internal] 127.0.0.1 - - [13/Oct/2025 15:45:32] "GET / HTTP/1.1" 200 -
+[October 13, 2025 15:45:37 PDT] [DEBUG | connectionpool] Starting new HTTPS connection (1): api.dictionaryapi.dev:443
+[October 13, 2025 15:45:38 PDT] [DEBUG | connectionpool] https://api.dictionaryapi.dev:443 "GET /api/v2/entries/en/test HTTP/1.1" 200 None
+[October 13, 2025 15:45:38 PDT] [INFO | api] None
+[October 13, 2025 15:45:38 PDT] [INFO | routes] Word: test added successfully
+[October 13, 2025 15:45:38 PDT] [INFO | _internal] 127.0.0.1 - - [13/Oct/2025 15:45:38] "POST /get_word HTTP/1.1" 200 -
+[October 13, 2025 15:46:48 PDT] [INFO | _internal]  * Detected change in '/Users/olawaleonabola/Documents/projects/course2/src/routes/routes.py', reloading
+[October 13, 2025 15:46:48 PDT] [INFO | _internal]  * Restarting with stat
+[October 13, 2025 15:46:51 PDT] [WARNING | _internal]  * Debugger is active!
+[October 13, 2025 15:46:51 PDT] [INFO | _internal]  * Debugger PIN: 315-820-742
+[October 13, 2025 15:46:56 PDT] [INFO | _internal]  * Detected change in '/Users/olawaleonabola/Documents/projects/course2/app.py', reloading
+[October 13, 2025 15:46:56 PDT] [INFO | _internal]  * Restarting with stat
+[October 13, 2025 15:46:57 PDT] [WARNING | _internal]  * Debugger is active!
+[October 13, 2025 15:46:58 PDT] [INFO | _internal]  * Debugger PIN: 315-820-742
