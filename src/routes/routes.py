@@ -7,7 +7,7 @@ import logging
 root = logging.getLogger("root")
 
 
-main_bp = Blueprint('main', __name__, url_prefix='/')
+main_bp = Blueprint('main', __name__)
 
 @main_bp.route("/")
 def main():
