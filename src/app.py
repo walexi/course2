@@ -1,20 +1,44 @@
 #!/usr/bin/env python3
+from flask import Flask
+from models.extensions import db  # Import the db object
+from routes import main_bp  # Import the blueprint
+from logging.config import dictConfig
 
-from flask import Flask, request
 
-app = Flask(__name__)
 
-@app.route("/")
-def main():
-    return '''
-     <p>Enter input here</p>
-	<form action="/echo_user_input" method="POST">
-         <input name="user_input">
-         <input type="submit" value="Submit!">
-     </form>
-     '''
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] [%(levelname)s | %(module)s] %(message)s",
+                "datefmt": "%B %d, %Y %H:%M:%S %Z",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+            },
+            "file": {
+                "class": "logging.FileHandler",
+                "filename": "worldClock.log",
+                "formatter": "default",
+            },
+        },
+        "root": {"level": "DEBUG", "handlers": ["console", "file"]},
+    }
+)
 
-@app.route("/echo_user_input", methods=["POST"])
-def echo_input():
-    input_text = request.form.get("user_input", "")
-    return "You entered: " + input_text
+def create_app():
+    app = Flask(__name__)
+    app.register_blueprint(main_bp)  # Register the blueprint
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"  # Example URI
+    db.init_app(app) # Initialize db with the Flask app
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    with app.app_context(): # Create tables within the app context
+        db.create_all() 
+    app.run(debug=True)
