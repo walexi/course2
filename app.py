@@ -3,6 +3,8 @@ from flask import Flask
 from logging.config import dictConfig
 
 
+app = Flask(__name__)
+
 dictConfig(
     {
         "version": 1,
@@ -28,7 +30,6 @@ dictConfig(
 )
 
 def create_app():
-    app = Flask(__name__)
     from src.models.extensions import db  # Import the db object
     from src.routes.routes import main_bp  # Import the blueprint
 
