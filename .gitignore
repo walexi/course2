@@ -1,3 +1,3 @@
 src/worldClock.log
 instance
-__pycache__
+*pycache*
