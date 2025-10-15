@@ -12,9 +12,12 @@ from io import BytesIO
 import base64
 import os
 
-API_KEY = os.getenv('API_KEY')
 
 app = Flask(__name__)
+
+app.config.from_prefixed_env("FLASK")
+
+API_KEY = app.config.get("API_KEY")
 
 metrics = GunicornPrometheusMetrics(app)
 
