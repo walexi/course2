@@ -7,3 +7,4 @@ class Base(DeclarativeBase, MappedAsDataclass):
   pass
 
 db = SQLAlchemy(model_class=Base)
+

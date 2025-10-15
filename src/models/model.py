@@ -5,12 +5,12 @@ from typing import Optional, List
 from src.models.extensions import Base, db
 from sqlalchemy.types import TypeDecorator, Text
 import json
+from dataclasses import dataclass
+
 
 class StringListType(TypeDecorator):
     impl = Text  # Store as TEXT in the database
-
     cache_ok = True
-
     def process_bind_param(self, value: List[str], dialect):
         if value is not None:
             return json.dumps(value)
@@ -42,12 +42,28 @@ class Word(db.Model):
 
     def __repr__(self) -> str:
         return f"Word(id={self.id!r}, word={self.word!r}, phonetic={self.phonetic!r})"
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'word': self.word,
+            'phonetic': self.phonetic,
+            'phonetics': [phonetic.to_dict() for phonetic in self.phonetics],
+            'meanings': [meaning.to_dict() for meaning in self.meanings]
+        }
 
 class Phonetic(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     phonetic: Mapped[str] = mapped_column()
     audio_url: Mapped[Optional[str]] = mapped_column(nullable=True) # the url to the audio file can be empty
     words: Mapped[Optional[List["Word"]]] = db.relationship("Word", secondary='word_phonetic_association', back_populates="phonetics", cascade="all, delete")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'phonetic': self.phonetic,
+            'audio_url': self.audio_url
+        }
+    
 
 class Meaning(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -59,6 +75,15 @@ class Meaning(db.Model):
     word_id: Mapped[int] = mapped_column(db.ForeignKey('word.id'))
     word: Mapped["Word"] = db.relationship(back_populates="meanings")
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'partOfSpeech': self.partOfSpeech,
+            'synonyms': self.synonyms,
+            'antonyms': self.antonyms,
+            'definitions': [definition.to_dict() for definition in self.definitions]
+        }
+
 class Definition(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     definition: Mapped[str] = mapped_column()
@@ -67,3 +92,12 @@ class Definition(db.Model):
     antonyms: Mapped[Optional[List[str]]] = mapped_column(StringListType, nullable=True)
     meaning_id: Mapped[int] = mapped_column(db.ForeignKey('meaning.id'))
     meaning: Mapped["Meaning"] = db.relationship(back_populates="definitions")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'definition': self.definition,
+            'example': self.example,
+            'synonyms': self.synonyms,
+            'antonyms': self.antonyms
+        }

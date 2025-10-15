@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <title>Word Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .input-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .word-list-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+        }
+
+        h1,
+        h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .word-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .word-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .add-btn,
+        .lookup-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .add-btn:hover,
+        .lookup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-btn:active,
+        .lookup-btn:active {
+            transform: translateY(0);
+        }
+
+        .lookup-btn {
+            background: linear-gradient(135deg, #38b2ac, #319795);
+        }
+
+        .word-list {
+            margin-top: 20px;
+        }
+
+        .word-item {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .word-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+            border-left-color: #38b2ac;
+        }
+
+        .content-card {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        /* Dictionary Styles */
+        .dictionary-card {
+            background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .word-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .word-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .phonetic-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .phonetic {
+            font-size: 1rem;
+            color: #666;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .audio-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .origin {
+            font-style: italic;
+            color: #666;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #38b2ac;
+            font-size: 0.9rem;
+        }
+
+        .meanings {
+            margin-top: 15px;
+        }
+
+        .meaning {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .part-of-speech {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .definition {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+        }
+
+        .definition-text {
+            font-size: 0.95rem;
+            color: #2d3748;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .example {
+            font-style: italic;
+            color: #666;
+            background: #fff8dc;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border-left: 3px solid #ffd700;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .example::before {
+            content: "💬 ";
+        }
+
+        .phonetic-variants {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .phonetic-variant {
+            background: #e6fffa;
+            color: #234e52;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #b2f5ea;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .dictionary-empty {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+            }
+
+            .input-section {
+                padding: 20px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .word-list-section,
+            .content-section {
+                padding: 20px;
+            }
+
+            .word-title {
+                font-size: 1.5rem;
+            }
+
+            .phonetic-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h1>Word Manager</h1>
+            <form class="input-group" id="myForm">
+                <input type="text" class="word-input" id="wordInput" name="wordInput" value="" required
+                    placeholder="Enter a word..." maxlength="50">
+                <button class="add-btn" type="submit">Search</button>
+            </form>
+        </div>
+        <div class="word-list-section">
+            <h2>Previous Words</h2>
+            <div class="word-list" id="wordList">
+                <div class="empty-state">No words added yet. Start by entering a word above!</div>
+            </div>
+        </div>
+
+        <div class="dictionary-card">
+            <h2>📚 Dictionary Lookup</h2>
+            <div class="content-card">
+                <div class="word-title" id="word-title">Word</div>
+                <img id="word-image" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop&crop=entropy&cs=tinysrgb"
+                    alt="Mountain landscape" class="content-image">
+            </div>
+            <div class="word-card" id="wordCard">
+                <div class="dictionary-empty">
+                    Click "Search" to see word definitions here
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        let words = [];
+
+        function playAudio(audioUrl) {
+            if (audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        }
+
+        function updateWordList() {
+            const wordList = $('#wordList');
+            if (words.length === 0) {
+                wordList.html('<div class="empty-state">No words added yet. Start by entering a word above!</div>');
+                return;
+            }
+            const wordItems = words.map(word =>
+                `<div class="word-item" onclick="selectWord('${word}')">${word}</div>`
+            ).join('');
+
+            wordList.html(wordItems);
+        }
+
+        window.selectWord = function (word) {
+            $('#wordInput').val(word);
+        }
+
+        function renderDictionary(data) {
+            console.log('Rendering dictionary data:', data);
+
+            if (!data) {
+                $('#wordCard').html('<div class="dictionary-empty">No data received</div>');
+                return;
+            }
+
+            // Find audio URL from phonetics (note: your data uses 'audio_url')
+            const audioUrl = data.phonetics?.find(p => p.audio_url)?.audio_url;
+
+            // Create phonetic variants HTML (note: your data uses 'phonetic' not 'text')
+            const phoneticVariants = data.phonetics?.map(p =>
+                p.phonetic ? `<span class="phonetic-variant">${p.phonetic}</span>` : ''
+            ).filter(v => v).join('') || '';
+
+            // Set word title (correct jQuery selector with #)
+            $('#word-title').text(data.word || 'Unknown Word');
+
+            let meaningsHtml = '';
+            if (data.meanings && data.meanings.length > 0) {
+                meaningsHtml = data.meanings.map(meaning => {
+                    const definitions = meaning.definitions;
+
+                    const definitionsHtml = definitions.map(def => `
+                        <div class="definition">
+                            <div class="definition-text">${def.definition || 'No definition available'}</div>
+                            ${def.example ? `<div class="example">${def.example}</div>` : ''}
+                        </div>
+                    `).join('');
+
+                    // Add synonyms and antonyms if they exist
+                    const synonymsHtml = meaning.synonyms && meaning.synonyms.length > 0
+                        ? `<div class="synonyms"><strong>Synonyms:</strong> ${meaning.synonyms.join(', ')}</div>`
+                        : '';
+
+                    const antonymsHtml = meaning.antonyms && meaning.antonyms.length > 0
+                        ? `<div class="antonyms"><strong>Antonyms:</strong> ${meaning.antonyms.join(', ')}</div>`
+                        : '';
+
+                    return `
+                        <div class="meaning">
+                            <div class="part-of-speech">${meaning.partOfSpeech || 'Unknown'}</div>
+                            ${definitionsHtml}
+                            ${synonymsHtml || antonymsHtml ? `<div class="synonyms-antonyms">${synonymsHtml}${antonymsHtml}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+            // Build and insert the complete HTML
+            $('#wordCard').html(`
+                <div class="word-header">
+                    <div class="phonetic-section">
+                        ${data.phonetic ? `<span class="phonetic">${data.phonetic}</span>` : ''}
+                        ${audioUrl ? `<button class="audio-btn" onclick="playAudio('${audioUrl}')" title="Play pronunciation">🔊</button>` : ''}
+                    </div>
+                    ${phoneticVariants ? `<div class="phonetic-variants">${phoneticVariants}</div>` : ''}
+                    ${data.origin ? `<div class="origin"><strong>Origin:</strong> ${data.origin}</div>` : ''}
+                </div>
+
+                <div class="meanings">
+                    ${meaningsHtml || '<div class="dictionary-empty">No meanings available</div>'}
+                </div>
+            `);
+        }
+        $(document).ready(function () {
+
+            var socket = io('/test');
+
+            $('#myForm').submit(function (e) {
+                e.preventDefault();
+                const word = $("#wordInput").val().trim();
+                if (word) {
+                    socket.emit('search', { wordInput: word });
+                    
+                    $("#wordInput").val('');
+                }
+            });
+
+            socket.on('text_response', function (msg, cb) {
+                console.log(msg)
+                // Add to words list if not already there
+                let word = msg['data']?.word
+                if (!words.includes(word)) {
+                    words.unshift(word);
+                    updateWordList();
+                }
+                renderDictionary(msg['data'])
+            });
+
+            socket.on('image_data', function (msg, cb) {
+                if (msg){
+                    $("#word-image").attr("src", msg);
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
