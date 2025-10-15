@@ -9,6 +9,6 @@ to run the tests\
 to run the application\
 `make run`
 
-Please note that to run this application or run the tests, you need to set the following environment either directly in your environment or in the Makefile
-API_KEY=  # api key to access google gemini
+Please note that to run this application or run the tests, you need to set the following environment either directly in your environment or in the Makefile\
+API_KEY=  # api key to access google gemini\
 PROMETHEUS_MULTIPROC_DIR= # directory to write prometheus files
