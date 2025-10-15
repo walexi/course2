@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+import eventlet
+eventlet.monkey_patch()
+
+
 from flask import Flask, request, render_template
 from logging.config import dictConfig
 from src.models.extensions import db  # Import the db object
