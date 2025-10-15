@@ -1,3 +1,6 @@
+.DS_store
+*.pyc
 *.log
 instance
 *pycache*
+*.db
